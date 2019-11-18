@@ -1,6 +1,7 @@
 package ru.krivocraft.robinhood;
 
 import org.junit.Test;
+import ru.krivocraft.robinhood.model.Client;
 
 import static org.junit.Assert.assertEquals;
 
