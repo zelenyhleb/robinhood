@@ -1,8 +1,8 @@
-package ru.krivocraft.robinhood.network.datasets;
+package ru.krivocraft.robinhood.network;
 
 import com.google.gson.annotations.SerializedName;
 
-public class TokenDataSet {
+public class TokenResultDataSet {
 
     @SerializedName("access_token")
     private final String accessToken;
@@ -18,7 +18,7 @@ public class TokenDataSet {
 
     private final String deviceId;
 
-    public TokenDataSet(String accessToken, String secret, String userId, String error, String deviceId) {
+    public TokenResultDataSet(String accessToken, String secret, String userId, String error, String deviceId) {
         this.accessToken = accessToken;
         this.secret = secret;
         this.userId = userId;
