@@ -1,27 +1,31 @@
-package ru.krivocraft.robinhood;
+package ru.krivocraft.robinhood.api;
 
 import com.google.gson.Gson;
-import okhttp3.*;
-import ru.krivocraft.robinhood.hash.Signature;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
 import ru.krivocraft.robinhood.model.Token;
 import ru.krivocraft.robinhood.model.TokenData;
-import ru.krivocraft.robinhood.network.TokenRequestBody;
+import ru.krivocraft.robinhood.network.ApiInterface;
+import ru.krivocraft.robinhood.network.ApiRequest;
 import ru.krivocraft.robinhood.network.TokenResultDataSet;
 import ru.krivocraft.robinhood.vkshit.TokenResponse;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Random;
 
 public class TokenReceiver {
 
-    private final OkHttpClient client;
     private final Gson gson = new Gson();
+    private ApiInterface apiInterface = new ApiInterface();
 
     public TokenReceiver() {
-        client = new OkHttpClient();
     }
 
     TokenData getInitialToken(String username, String password) throws IOException {
+        OkHttpClient client = new OkHttpClient();
         final String deviceId = randomString();
         final Request request = new Request.Builder()
                 .get()
@@ -42,29 +46,10 @@ public class TokenReceiver {
     }
 
     Token refreshToken(TokenData token) throws IOException {
-        final String httpQuery = buildHttpQuery(new TokenRequestBody(token));
-        final Request request = new Request.Builder()
-                .url("https://api.vk.com/" + httpQuery +
-                        "&sig=" + new Signature(httpQuery + token.getSecret()).getEncoded())
-                .header("User-Agent", "VKAndroidApp/5.23-2978 (Android 4.4.2; SDK 19; x86; unknown Android SDK built for x86; en; 320x240)")
-                .build();
-        try (Response response = client.newCall(request).execute()) {
-            ResponseBody body = response.body();
-            if (body != null) {
-                TokenResponse encoded = gson.fromJson(body.string(), TokenResponse.class);
-                return encoded.getToken();
-            }
-        }
-        return Token.EMPTY;
-    }
-
-    private String buildHttpQuery(TokenRequestBody requestBody) {
-        return "/method/auth.refreshToken?v=" + requestBody.getVersion() +
-                "&https=" + requestBody.getHttps() +
-                "&lang=" + requestBody.getLanguage() +
-                "&access_token=" + requestBody.getAccessToken() +
-                "&device_id=" + requestBody.getDeviceId() +
-                "&timestamp=" + requestBody.getTimestamp();
+        TokenResponse response = gson.fromJson(
+                apiInterface.sendRequest(
+                        new ApiRequest("auth.refreshToken", new HashMap<>(), token)), TokenResponse.class);
+        return response.getToken();
     }
 
     private String randomString() {

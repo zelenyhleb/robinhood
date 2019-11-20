@@ -32,7 +32,8 @@ public class Signature {
         return sb.toString();
     }
 
-    public String getEncoded() {
+    @Override
+    public String toString() {
         return encoded;
     }
 }

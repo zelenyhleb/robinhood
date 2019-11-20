@@ -1,4 +1,4 @@
-package ru.krivocraft.robinhood;
+package ru.krivocraft.robinhood.api;
 
 import org.junit.Test;
 
