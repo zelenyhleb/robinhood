@@ -8,12 +8,11 @@ import okhttp3.ResponseBody;
 import ru.krivocraft.robinhood.model.Token;
 import ru.krivocraft.robinhood.model.TokenData;
 import ru.krivocraft.robinhood.network.ApiInterface;
-import ru.krivocraft.robinhood.network.ApiRequest;
+import ru.krivocraft.robinhood.network.TokenGet;
 import ru.krivocraft.robinhood.network.TokenResultDataSet;
 import ru.krivocraft.robinhood.vkshit.TokenResponse;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Random;
 
 public class TokenReceiver {
@@ -48,7 +47,7 @@ public class TokenReceiver {
     Token refreshToken(TokenData token) throws IOException {
         TokenResponse response = gson.fromJson(
                 apiInterface.sendRequest(
-                        new ApiRequest("auth.refreshToken", new HashMap<>(), token)), TokenResponse.class);
+                        new TokenGet().getTokenRequest("auth.refreshToken", token)), TokenResponse.class);
         return response.getToken();
     }
 
