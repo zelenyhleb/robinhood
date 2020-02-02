@@ -4,10 +4,15 @@ public class M3U8Link {
 
     public static String decode(String url) {
         if (url.contains("index.m3u8?")) {
+            String[] urlParts = url.split("/");
             if (url.contains("/audios/")) {
-                return url.replaceAll("(.+?)/[^/]+?/audios/([^/]+)/.+", "\\1/audios/\\2.mp3");
+                return "https://" +
+                        urlParts[2] + "/" +
+                        urlParts[3] + "/" +
+                        urlParts[4] + "/" +
+                        urlParts[6] + "/" +
+                        urlParts[7] + ".mp3";
             } else {
-                String[] urlParts = url.split("/");
                 return "https://" +
                         urlParts[2] + "/" +
                         urlParts[3] + "/" +

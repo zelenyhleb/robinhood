@@ -7,6 +7,6 @@ public class DecoderTest {
 
     @Test
     public void decoderTest() {
-        System.out.println(new M3U8Link().decode("https://cs9-7v4.vkuseraudio.net/p16/59bd74a560b/b02afc1b07c0dc/index.m3u8?extra=w4zhUOaYxRVVYH5OvdX4kCaUN6JFsAjOM-n1DUuPNubHTJG_kQe28a8oS--cgMVkzpPIC09pSoM8hKe5fOqJyzC1JYfeZ_VFuFCgak9BC1qJ-dwNoLXVw24PyEoC91U89AwTs5-wi6w9avL1i0c1Vw"));
+        System.out.println(M3U8Link.decode("https://psv4.vkuseraudio.net/c613721/u33143959/5956c1e2e0e/audios/e4818de57db9/index.m3u8?extra=of2SoLNVKV7rV4FaFYGvQc0cRFTQiNrP3CdS51s3ZETo4SEMJwpJ9JfMsTZKJ5ybEK893i5_z2UHhXzgP5d5hOslE74C9f9l-yXzhscLY9ZKSYm6Ip1kqvTYwvx2gdnzld79r7jSTj5W0mlp6p7OxA"));
     }
 }
