@@ -23,7 +23,7 @@ public class TokenReceiver {
     public TokenReceiver() {
     }
 
-    TokenData getInitialToken(String username, String password) throws IOException {
+    public TokenData getInitialToken(String username, String password) throws IOException {
         OkHttpClient client = new OkHttpClient();
         final String deviceId = randomString();
         final Request request = new Request.Builder()
@@ -44,7 +44,7 @@ public class TokenReceiver {
         }
     }
 
-    Token refreshToken(TokenData token) throws IOException {
+    public Token refreshToken(TokenData token) throws IOException {
         TokenResponse response = gson.fromJson(
                 apiInterface.sendRequest(
                         new TokenGet().getTokenRequest("auth.refreshToken", token)), TokenResponse.class);

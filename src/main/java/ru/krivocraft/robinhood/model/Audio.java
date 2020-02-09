@@ -17,4 +17,12 @@ public class Audio {
     public String getUrl() {
         return url;
     }
+
+    public String getArtist() {
+        return artist;
+    }
+
+    public String getTitle() {
+        return title;
+    }
 }
