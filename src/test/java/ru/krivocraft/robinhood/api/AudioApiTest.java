@@ -20,7 +20,7 @@ public class AudioApiTest {
         TokenReceiver tokenReceiver = new TokenReceiver();
         Client client = new Client();
         ApiInterface apiInterface = new ApiInterface();
-        TokenData initialToken = tokenReceiver.getInitialToken("nikifor.fedorov@gmail.com", "QamaziK2550");
+        TokenData initialToken = tokenReceiver.getInitialToken("urUsername", "urPassword");
         String secret = initialToken.getSecret();
         String token = tokenReceiver.refreshToken(initialToken).getToken();
         ApiRequest musicRequest = new AudioGet().getAudioRequest("audio.get", "33143959",
