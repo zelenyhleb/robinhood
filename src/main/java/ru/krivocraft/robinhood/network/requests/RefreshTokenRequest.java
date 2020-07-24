@@ -1,4 +1,4 @@
-package ru.krivocraft.robinhood.network;
+package ru.krivocraft.robinhood.network.requests;
 
 import ru.krivocraft.robinhood.hash.Signature;
 import ru.krivocraft.robinhood.model.TokenData;
@@ -6,18 +6,18 @@ import ru.krivocraft.robinhood.model.TokenData;
 import java.util.HashMap;
 import java.util.Map;
 
-public class AudioGet {
+public class RefreshTokenRequest {
 
-    public ApiRequest getAudioRequest(String method, String ownerId, TokenData tokenData) {
+
+    public ApiRequest getTokenRequest(TokenData tokenData) {
         Map<String, String> params = new HashMap<>();
         params.put("access_token", tokenData.getAccessToken());
         params.put("device_id", tokenData.getDeviceId());
-        params.put("owner_id", ownerId);
         params.put("v", "5.93");
         params.put("https", "1");
         params.put("lang", "en");
-        params.put("sig", new Signature(buildHttpQuery(params, method) + tokenData.getSecret()).toString());
-        return new ApiRequest(method, params);
+        params.put("sig", new Signature(buildHttpQuery(params, "auth.refreshToken") + tokenData.getSecret()).toString());
+        return new ApiRequest("auth.refreshToken", params);
     }
 
     public String buildHttpQuery(Map<String, String> params, String method) {
@@ -31,5 +31,4 @@ public class AudioGet {
         builder.deleteCharAt(builder.length() - 1);
         return builder.toString();
     }
-
 }

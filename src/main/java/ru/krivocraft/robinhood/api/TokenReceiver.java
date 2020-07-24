@@ -8,14 +8,12 @@ import okhttp3.ResponseBody;
 import ru.krivocraft.robinhood.model.Token;
 import ru.krivocraft.robinhood.model.TokenData;
 import ru.krivocraft.robinhood.network.ApiInterface;
-import ru.krivocraft.robinhood.network.ApiRequest;
-import ru.krivocraft.robinhood.network.TokenGet;
+import ru.krivocraft.robinhood.network.requests.RefreshTokenRequest;
 import ru.krivocraft.robinhood.network.TokenResultDataSet;
+import ru.krivocraft.robinhood.network.requests.TwoFARequest;
 import ru.krivocraft.robinhood.vkshit.TokenResponse;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -35,7 +33,6 @@ public class TokenReceiver {
                 "&client_secret=hHbZxrka2uZ6jB1inYsH&lang=en" +
                 "&scope=nohttps,all&username=" + username + "&password=" + password +
                 (code.isEmpty() ? "" : "&2fa_supported=1&force_sms=1&code=" + code) + "&device_id=" + deviceId;
-        System.out.println(url);
         final Request request = new Request.Builder()
                 .get()
                 .url(url)
@@ -43,18 +40,11 @@ public class TokenReceiver {
         try (Response response = client.newCall(request).execute()) {
             ResponseBody body = response.body();
             if (body != null) {
-                String json = body.string();
-                System.out.println(json);
-                TokenResultDataSet dataSet = gson.fromJson(json, TokenResultDataSet.class);
+                TokenResultDataSet dataSet = gson.fromJson(body.string(), TokenResultDataSet.class);
                 if ("need_validation".equals(dataSet.getError())) {
                     Scanner scanner = new Scanner(System.in);
-                    Map<String, String> params = new HashMap<>();
-                    params.put("sid", dataSet.getValidationSid());
-                    params.put("v", "5.93");
-                    apiInterface.sendRequest(new ApiRequest("auth.validatePhone", params));
-                    String twoFACode = scanner.nextLine();
-                    System.out.println(twoFACode);
-                    return getInitialToken(username, password, twoFACode);
+                    apiInterface.sendRequest(new TwoFARequest().get2FARequest(dataSet.getValidationSid()));
+                    return getInitialToken(username, password, scanner.nextLine());
                 }
                 return new TokenData(dataSet.getAccessToken(), dataSet.getSecret(), deviceId);
             } else {
@@ -66,7 +56,7 @@ public class TokenReceiver {
     public Token refreshToken(TokenData token) throws IOException {
         TokenResponse response = gson.fromJson(
                 apiInterface.sendRequest(
-                        new TokenGet().getTokenRequest("auth.refreshToken", token)), TokenResponse.class);
+                        new RefreshTokenRequest().getTokenRequest(token)), TokenResponse.class);
         return response.getToken();
     }
 

@@ -1,4 +1,4 @@
-package ru.krivocraft.robinhood.network;
+package ru.krivocraft.robinhood.network.requests;
 
 import java.util.Map;
 

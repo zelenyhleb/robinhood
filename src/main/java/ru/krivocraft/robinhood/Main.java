@@ -7,8 +7,8 @@ import ru.krivocraft.robinhood.model.Client;
 import ru.krivocraft.robinhood.model.Response;
 import ru.krivocraft.robinhood.model.TokenData;
 import ru.krivocraft.robinhood.network.ApiInterface;
-import ru.krivocraft.robinhood.network.ApiRequest;
-import ru.krivocraft.robinhood.network.AudioGet;
+import ru.krivocraft.robinhood.network.requests.ApiRequest;
+import ru.krivocraft.robinhood.network.requests.AudioGet;
 import ru.krivocraft.robinhood.network.M3U8Link;
 
 import java.io.IOException;

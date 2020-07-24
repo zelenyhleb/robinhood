@@ -4,6 +4,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
+import ru.krivocraft.robinhood.network.requests.ApiRequest;
 
 import java.io.IOException;
 
