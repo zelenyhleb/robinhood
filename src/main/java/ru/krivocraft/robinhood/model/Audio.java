@@ -1,9 +1,12 @@
 package ru.krivocraft.robinhood.model;
 
+import com.google.gson.annotations.SerializedName;
+
 public class Audio {
     private final String url;
     private final String title;
     private final String artist;
+    @SerializedName("duration")
     private final int duration;
 
     public Audio(String url, String title, String artist, int duration) {
@@ -24,5 +27,9 @@ public class Audio {
 
     public String getTitle() {
         return title;
+    }
+
+    public int getDuration() {
+        return duration;
     }
 }

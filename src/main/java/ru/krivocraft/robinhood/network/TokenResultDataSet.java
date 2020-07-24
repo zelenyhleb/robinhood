@@ -16,6 +16,9 @@ public class TokenResultDataSet {
     @SerializedName("error")
     private final String error;
 
+    @SerializedName("validation_sid")
+    private String validationSid;
+
     private final String deviceId;
 
     public TokenResultDataSet(String accessToken, String secret, String userId, String error, String deviceId) {
@@ -44,5 +47,9 @@ public class TokenResultDataSet {
 
     public String getError() {
         return error;
+    }
+
+    public String getValidationSid() {
+        return validationSid;
     }
 }
