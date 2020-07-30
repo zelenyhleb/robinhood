@@ -1,7 +1,7 @@
 package ru.krivocraft.robinhood.network;
 
 import com.google.gson.annotations.SerializedName;
-import ru.krivocraft.robinhood.model.TokenData;
+import ru.krivocraft.robinhood.model.Token;
 
 public class UserInfoRequestBody {
     @SerializedName("v")
@@ -38,7 +38,7 @@ public class UserInfoRequestBody {
     private final String deviceId;
 
 
-    public UserInfoRequestBody(TokenData token) {
+    public UserInfoRequestBody(Token token) {
         this.version = "5.93";
         this.https = "1";
         this.androidVersion = "19";

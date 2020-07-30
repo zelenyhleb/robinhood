@@ -1,7 +1,7 @@
 package ru.krivocraft.robinhood.network.requests;
 
 import ru.krivocraft.robinhood.hash.Signature;
-import ru.krivocraft.robinhood.model.TokenData;
+import ru.krivocraft.robinhood.model.Token;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -9,14 +9,15 @@ import java.util.Map;
 public class RefreshTokenRequest {
 
 
-    public ApiRequest getTokenRequest(TokenData tokenData) {
+    public ApiRequest getTokenRequest(Token token) {
         Map<String, String> params = new HashMap<>();
-        params.put("access_token", tokenData.getAccessToken());
-        params.put("device_id", tokenData.getDeviceId());
+        System.out.println(token.getSecret());
+        params.put("access_token", token.getAccessToken());
+        params.put("device_id", token.getDeviceId());
         params.put("v", "5.93");
         params.put("https", "1");
         params.put("lang", "en");
-        params.put("sig", new Signature(buildHttpQuery(params, "auth.refreshToken") + tokenData.getSecret()).toString());
+        params.put("sig", new Signature(buildHttpQuery(params, "auth.refreshToken") + token.getSecret()).toString());
         return new ApiRequest("auth.refreshToken", params);
     }
 

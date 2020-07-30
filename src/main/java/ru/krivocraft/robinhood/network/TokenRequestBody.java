@@ -1,7 +1,7 @@
 package ru.krivocraft.robinhood.network;
 
 import com.google.gson.annotations.SerializedName;
-import ru.krivocraft.robinhood.model.TokenData;
+import ru.krivocraft.robinhood.model.Token;
 
 public class TokenRequestBody {
     @SerializedName("v")
@@ -22,7 +22,7 @@ public class TokenRequestBody {
     @SerializedName("timestamp")
     private final String timestamp;
 
-    public TokenRequestBody(TokenData token) {
+    public TokenRequestBody(Token token) {
         this.accessToken = token.getAccessToken();
         this.deviceId = token.getDeviceId();
         this.timestamp = "0";

@@ -4,16 +4,30 @@ import com.google.gson.annotations.SerializedName;
 
 public class Token {
 
-    @SerializedName("token")
-    private final String token;
+    @SerializedName("access_token")
+    private final String accessToken;
 
-    public static final Token EMPTY = new Token("");
+    @SerializedName("secret")
+    private final String secret;
 
-    public Token(String token) {
-        this.token = token;
+    @SerializedName("device_id")
+    private final String deviceId;
+
+    public Token(String accessToken, String secret, String deviceId) {
+        this.accessToken = accessToken;
+        this.secret = secret;
+        this.deviceId = deviceId;
     }
 
-    public String getToken() {
-        return token;
+    public String getAccessToken() {
+        return accessToken;
+    }
+
+    public String getSecret() {
+        return secret;
+    }
+
+    public String getDeviceId() {
+        return deviceId;
     }
 }

@@ -1,7 +1,6 @@
 package ru.krivocraft.robinhood.vkshit;
 
 import com.google.gson.annotations.SerializedName;
-import ru.krivocraft.robinhood.model.Token;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -15,7 +14,7 @@ public class TokenResponse {
         response = new HashMap<>();
     }
 
-    public Token getToken() {
-        return new Token(response.get("token"));
+    public String getToken() {
+        return response.get("token");
     }
 }

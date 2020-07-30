@@ -8,4 +8,6 @@ public interface Storage {
 
     Token getToken();
 
+    boolean available();
+
 }

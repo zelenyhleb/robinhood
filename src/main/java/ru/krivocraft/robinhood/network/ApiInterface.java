@@ -21,10 +21,13 @@ public class ApiInterface {
                 .url("https://api.vk.com/" + apiRequest.buildHttpQuery())
                 .header("User-Agent", "VKAndroidApp/5.23-2978 (Android 4.4.2; SDK 19; x86; unknown Android SDK built for x86; en; 320x240)")
                 .build();
+        System.out.println(request.toString());
         try (Response response = client.newCall(request).execute()) {
             ResponseBody body = response.body();
             if (body != null) {
-                return body.string();
+                String string = body.string();
+                System.out.println(string);
+                return string;
             }
         }
         return "";
