@@ -2,6 +2,7 @@ package ru.krivocraft.robinhood.api;
 
 import com.google.gson.Gson;
 import org.junit.Test;
+import ru.krivocraft.robinhood.TokenException;
 import ru.krivocraft.robinhood.model.*;
 import ru.krivocraft.robinhood.network.ApiInterface;
 import ru.krivocraft.robinhood.network.requests.ApiRequest;
@@ -33,8 +34,8 @@ public class AudioApiTest {
     };
 
     @Test
-    public void getAudio() throws IOException {
-        TokenReceiver tokenReceiver = new TokenReceiver(storage);
+    public void getAudio() throws IOException, TokenException {
+        TokenReceiver tokenReceiver = new TokenReceiver();
         Client client = new Client();
         Token initialToken = tokenReceiver.getInitialToken("kefir.fedorov@gmail.com", "QamaziK2550", "");
         String secret = initialToken.getSecret();

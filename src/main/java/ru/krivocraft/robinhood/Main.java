@@ -1,18 +1,13 @@
 package ru.krivocraft.robinhood;
 
-import com.google.gson.Gson;
-import ru.krivocraft.robinhood.api.TokenReceiver;
 import ru.krivocraft.robinhood.model.Audio;
-import ru.krivocraft.robinhood.model.Client;
-import ru.krivocraft.robinhood.model.Response;
 import ru.krivocraft.robinhood.model.Token;
-import ru.krivocraft.robinhood.network.ApiInterface;
-import ru.krivocraft.robinhood.network.requests.ApiRequest;
-import ru.krivocraft.robinhood.network.requests.AudioGet;
 import ru.krivocraft.robinhood.network.M3U8Link;
 import ru.krivocraft.robinhood.storage.Storage;
 
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Scanner;
 
 public class Main {
@@ -38,23 +33,34 @@ public class Main {
                 return token != null;
             }
         };
-        TokenReceiver tokenReceiver = new TokenReceiver(storage);
-        Client client = new Client();
+        Robinhood robinhood = new Robinhood(storage);
         while (!exit) {
             switch (scanner.nextInt()) {
                 case 0:
                     exit = true;
                     break;
                 case 1:
-                    Token initialToken = tokenReceiver.getInitialToken("kefir.fedorov@gmail.com", "QamaziK2550", "");
-                    String secret = initialToken.getSecret();
-                    String token = tokenReceiver.refreshToken(initialToken).getAccessToken();
-                    ApiRequest musicRequest = new AudioGet().getAudioRequest("audio.get", "33143959",
-                            new Token(token, secret, client.getClientId()));
-                    String json = new ApiInterface().sendRequest(musicRequest);
-                    Response response = new Gson().fromJson(json, Response.class);
-                    System.out.println("music_response " + json);
-                    for (Audio audio : response.getResponse().getItems()) {
+                    List<Audio> audioList = new LinkedList<>();
+
+                    try {
+                        audioList.addAll(robinhood.tryWithCached());
+                    } catch (TokenException e) {
+                        System.out.println("No token provided");
+                        String username = scanner.next();
+                        String password = scanner.next();
+                        try {
+                            audioList.addAll(robinhood.tryWithNewToken(username, password, ""));
+                        } catch (TokenException tokenException) {
+                            System.out.println("Need validation");
+                            try {
+                                audioList.addAll(robinhood.tryWithNewToken(username, password, scanner.next()));
+                            } catch (TokenException exception) {
+                                exception.printStackTrace();
+                            }
+                        }
+
+                    }
+                    for (Audio audio : audioList) {
                         System.out.println(M3U8Link.decode(audio.getUrl()));
                     }
                     break;
