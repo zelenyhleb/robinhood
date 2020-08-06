@@ -1,4 +1,4 @@
-package ru.krivocraft.robinhood;
+package ru.krivocraft.robinhood.api;
 
 public class TokenException extends Exception {
 

@@ -1,13 +1,15 @@
-package ru.krivocraft.robinhood;
+package ru.krivocraft.robinhood.api;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import ru.krivocraft.robinhood.api.TokenException;
 import ru.krivocraft.robinhood.api.TokenReceiver;
 import ru.krivocraft.robinhood.model.*;
 import ru.krivocraft.robinhood.network.ApiInterface;
-import ru.krivocraft.robinhood.network.UserResponse;
-import ru.krivocraft.robinhood.network.requests.ApiRequest;
-import ru.krivocraft.robinhood.network.requests.AudioGet;
-import ru.krivocraft.robinhood.network.requests.IdentifierRequest;
+import ru.krivocraft.robinhood.network.VKResponse;
+import ru.krivocraft.robinhood.network.requests.VKRequest;
+import ru.krivocraft.robinhood.network.requests.GetUserAudioRequest;
+import ru.krivocraft.robinhood.network.requests.GetIdentifierRequest;
 import ru.krivocraft.robinhood.storage.Storage;
 
 import java.io.IOException;
@@ -27,10 +29,12 @@ public class Robinhood {
 
     public List<Audio> tryWithCached() throws TokenException, IOException {
         if (storage.available()) {
-            ApiRequest userRequest = new IdentifierRequest().getIdentifierRequest(storage.getToken());
-            User userResponse = new Gson().fromJson(new ApiInterface().sendRequest(userRequest), UserResponse.class).getResponse();
-            ApiRequest musicRequest = new AudioGet().getAudioRequest("audio.get", String.valueOf(userResponse.getIdentifier()), storage.getToken());
-            Response response = new Gson().fromJson(new ApiInterface().sendRequest(musicRequest), Response.class);
+            VKRequest userRequest = new GetIdentifierRequest(storage.getToken());
+            VKResponse<User> userResponse = new Gson().fromJson(new ApiInterface().send(userRequest), new TypeToken<VKResponse<User>>() {
+            }.getType());
+            VKRequest musicRequest = new GetUserAudioRequest(String.valueOf(userResponse.getResponse().getIdentifier()), storage.getToken());
+            VKResponse<AudioList> response = new Gson().fromJson(new ApiInterface().send(musicRequest), new TypeToken<VKResponse<AudioList>>() {
+            }.getType());
             return response.getResponse().getItems();
         } else {
             System.out.println("No token provided");

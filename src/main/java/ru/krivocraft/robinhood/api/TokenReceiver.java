@@ -1,19 +1,20 @@
 package ru.krivocraft.robinhood.api;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
-import ru.krivocraft.robinhood.TokenException;
 import ru.krivocraft.robinhood.model.Token;
 import ru.krivocraft.robinhood.network.ApiInterface;
 import ru.krivocraft.robinhood.network.TokenResultDataSet;
+import ru.krivocraft.robinhood.network.VKResponse;
 import ru.krivocraft.robinhood.network.requests.RefreshTokenRequest;
 import ru.krivocraft.robinhood.network.requests.TwoFARequest;
-import ru.krivocraft.robinhood.vkshit.TokenResponse;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.Random;
 
 public class TokenReceiver {
@@ -38,7 +39,7 @@ public class TokenReceiver {
             if (body != null) {
                 TokenResultDataSet dataSet = gson.fromJson(body.string(), TokenResultDataSet.class);
                 if ("need_validation".equals(dataSet.getError())) {
-                    apiInterface.sendRequest(new TwoFARequest().get2FARequest(dataSet.getValidationSid()));
+                    apiInterface.send(new TwoFARequest(dataSet.getValidationSid()));
                     throw new TokenException("code required");
                 }
                 return new Token(dataSet.getAccessToken(), dataSet.getSecret(), deviceId);
@@ -49,10 +50,11 @@ public class TokenReceiver {
     }
 
     public Token refreshToken(Token token) throws IOException {
-        TokenResponse response = gson.fromJson(
-                apiInterface.sendRequest(
-                        new RefreshTokenRequest().getTokenRequest(token)), TokenResponse.class);
-        return new Token(response.getToken(), token.getSecret(), token.getDeviceId());
+        VKResponse<Map<String, String>> response = gson.fromJson(
+                apiInterface.send(
+                        new RefreshTokenRequest(token)), new TypeToken<VKResponse<Map<String, String>>>() {
+                }.getType());
+        return new Token(response.getResponse().get("token"), token.getSecret(), token.getDeviceId());
     }
 
     private String randomString() {

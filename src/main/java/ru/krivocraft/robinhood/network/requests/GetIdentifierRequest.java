@@ -6,11 +6,11 @@ import ru.krivocraft.robinhood.model.Token;
 import java.util.HashMap;
 import java.util.Map;
 
-public class RefreshTokenRequest extends VKRequest {
+public class GetIdentifierRequest extends VKRequest {
 
     private final Token token;
 
-    public RefreshTokenRequest(Token token) {
+    public GetIdentifierRequest(Token token) {
         this.token = token;
     }
 
@@ -28,6 +28,6 @@ public class RefreshTokenRequest extends VKRequest {
 
     @Override
     protected String method() {
-        return "auth.refreshToken";
+        return "account.getProfileInfo";
     }
 }

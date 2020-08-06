@@ -6,11 +6,13 @@ import ru.krivocraft.robinhood.model.Token;
 import java.util.HashMap;
 import java.util.Map;
 
-public class RefreshTokenRequest extends VKRequest {
+public class GetUserAudioRequest extends VKRequest {
 
+    private final String ownerId;
     private final Token token;
 
-    public RefreshTokenRequest(Token token) {
+    public GetUserAudioRequest(String ownerId, Token token) {
+        this.ownerId = ownerId;
         this.token = token;
     }
 
@@ -19,6 +21,7 @@ public class RefreshTokenRequest extends VKRequest {
         Map<String, String> params = new HashMap<>();
         params.put("access_token", token.getAccessToken());
         params.put("device_id", token.getDeviceId());
+        params.put("owner_id", ownerId);
         params.put("v", "5.93");
         params.put("https", "1");
         params.put("lang", "en");
@@ -28,6 +31,6 @@ public class RefreshTokenRequest extends VKRequest {
 
     @Override
     protected String method() {
-        return "auth.refreshToken";
+        return "audio.get";
     }
 }
