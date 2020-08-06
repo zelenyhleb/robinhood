@@ -2,13 +2,12 @@ package ru.krivocraft.robinhood;
 
 import com.google.gson.Gson;
 import ru.krivocraft.robinhood.api.TokenReceiver;
-import ru.krivocraft.robinhood.model.Audio;
-import ru.krivocraft.robinhood.model.Client;
-import ru.krivocraft.robinhood.model.Response;
-import ru.krivocraft.robinhood.model.Token;
+import ru.krivocraft.robinhood.model.*;
 import ru.krivocraft.robinhood.network.ApiInterface;
+import ru.krivocraft.robinhood.network.UserResponse;
 import ru.krivocraft.robinhood.network.requests.ApiRequest;
 import ru.krivocraft.robinhood.network.requests.AudioGet;
+import ru.krivocraft.robinhood.network.requests.IdentifierRequest;
 import ru.krivocraft.robinhood.storage.Storage;
 
 import java.io.IOException;
@@ -28,7 +27,9 @@ public class Robinhood {
 
     public List<Audio> tryWithCached() throws TokenException, IOException {
         if (storage.available()) {
-            ApiRequest musicRequest = new AudioGet().getAudioRequest("audio.get", "33143959", storage.getToken());
+            ApiRequest userRequest = new IdentifierRequest().getIdentifierRequest(storage.getToken());
+            User userResponse = new Gson().fromJson(new ApiInterface().sendRequest(userRequest), UserResponse.class).getResponse();
+            ApiRequest musicRequest = new AudioGet().getAudioRequest("audio.get", String.valueOf(userResponse.getIdentifier()), storage.getToken());
             Response response = new Gson().fromJson(new ApiInterface().sendRequest(musicRequest), Response.class);
             return response.getResponse().getItems();
         } else {

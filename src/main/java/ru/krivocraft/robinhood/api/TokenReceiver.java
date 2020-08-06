@@ -52,8 +52,7 @@ public class TokenReceiver {
         TokenResponse response = gson.fromJson(
                 apiInterface.sendRequest(
                         new RefreshTokenRequest().getTokenRequest(token)), TokenResponse.class);
-        Token refreshed = new Token(response.getToken(), token.getSecret(), token.getDeviceId());
-        return refreshed;
+        return new Token(response.getToken(), token.getSecret(), token.getDeviceId());
     }
 
     private String randomString() {

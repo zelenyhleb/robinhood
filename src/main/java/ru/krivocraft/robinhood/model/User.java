@@ -1,22 +1,29 @@
 package ru.krivocraft.robinhood.model;
 
+import com.google.gson.annotations.SerializedName;
+
 public class User {
-    private final String username;
-    private final String password;
+    @SerializedName("first_name")
+    private final String firstName;
+
+    @SerializedName("last_name")
+    private final String lastName;
+
+    @SerializedName("id")
     private final int identifier;
 
-    public User(String username, String password, int identifier) {
-        this.username = username;
-        this.password = password;
+    public User(String firstName, String lastName, int identifier) {
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.identifier = identifier;
     }
 
-    public String getUsername() {
-        return username;
+    public String getFirstName() {
+        return firstName;
     }
 
-    public String getPassword() {
-        return password;
+    public String getLastName() {
+        return lastName;
     }
 
     public int getIdentifier() {
