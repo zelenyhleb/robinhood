@@ -2,14 +2,12 @@ package ru.krivocraft.robinhood.api;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import ru.krivocraft.robinhood.api.TokenException;
-import ru.krivocraft.robinhood.api.TokenReceiver;
 import ru.krivocraft.robinhood.model.*;
 import ru.krivocraft.robinhood.network.ApiInterface;
 import ru.krivocraft.robinhood.network.VKResponse;
-import ru.krivocraft.robinhood.network.requests.VKRequest;
-import ru.krivocraft.robinhood.network.requests.GetUserAudioRequest;
 import ru.krivocraft.robinhood.network.requests.GetIdentifierRequest;
+import ru.krivocraft.robinhood.network.requests.GetUserAudioRequest;
+import ru.krivocraft.robinhood.network.requests.VKRequest;
 import ru.krivocraft.robinhood.storage.Storage;
 
 import java.io.IOException;
@@ -27,7 +25,7 @@ public class Robinhood {
         this.client = new Client();
     }
 
-    public List<Audio> tryWithCached() throws TokenException, IOException {
+    public List<Audio> tryWithCached() throws NoTokenException, IOException {
         if (storage.available()) {
             VKRequest userRequest = new GetIdentifierRequest(storage.getToken());
             VKResponse<User> userResponse = new Gson().fromJson(new ApiInterface().send(userRequest), new TypeToken<VKResponse<User>>() {
@@ -37,19 +35,22 @@ public class Robinhood {
             }.getType());
             return response.getResponse().getItems();
         } else {
-            System.out.println("No token provided");
-            throw new TokenException("No token provided");
+            throw new NoTokenException();
         }
     }
 
-    public List<Audio> tryWithNewToken(String username, String password, String code) throws IOException, TokenException {
+    public List<Audio> tryWithNewToken(String username, String password, String code) throws IOException, NoTokenException, CodeRequiredException, InvalidClientException {
         Token initialToken = receiver.getInitialToken(username, password, code);
         String secret = initialToken.getSecret();
         String accessToken = receiver.refreshToken(initialToken).getAccessToken();
         Token token = new Token(accessToken, secret, client.getClientId());
         storage.putToken(token);
-
         return tryWithCached();
+    }
+
+    public List<Audio> tryWithNewToken(String username, String password) throws CodeRequiredException, InvalidClientException, IOException, NoTokenException {
+        return tryWithNewToken(username, password, "");
+
     }
 
 }

@@ -1,7 +1,9 @@
 package ru.krivocraft.robinhood;
 
+import ru.krivocraft.robinhood.api.CodeRequiredException;
+import ru.krivocraft.robinhood.api.InvalidClientException;
 import ru.krivocraft.robinhood.api.Robinhood;
-import ru.krivocraft.robinhood.api.TokenException;
+import ru.krivocraft.robinhood.api.NoTokenException;
 import ru.krivocraft.robinhood.model.Audio;
 import ru.krivocraft.robinhood.model.Token;
 import ru.krivocraft.robinhood.network.M3U8Link;
@@ -37,31 +39,14 @@ public class Main {
         };
         Robinhood robinhood = new Robinhood(storage);
         while (!exit) {
+            System.out.println("enter 0 to exit, 1 to start");
             switch (scanner.nextInt()) {
                 case 0:
                     exit = true;
                     break;
                 case 1:
                     List<Audio> audioList = new LinkedList<>();
-
-                    try {
-                        audioList.addAll(robinhood.tryWithCached());
-                    } catch (TokenException e) {
-                        System.out.println("No token provided");
-                        String username = scanner.next();
-                        String password = scanner.next();
-                        try {
-                            audioList.addAll(robinhood.tryWithNewToken(username, password, ""));
-                        } catch (TokenException tokenException) {
-                            System.out.println("Need validation");
-                            try {
-                                audioList.addAll(robinhood.tryWithNewToken(username, password, scanner.next()));
-                            } catch (TokenException exception) {
-                                exception.printStackTrace();
-                            }
-                        }
-
-                    }
+                    attempt(scanner, robinhood, audioList);
                     for (Audio audio : audioList) {
                         System.out.println(M3U8Link.decode(audio.getUrl()));
                     }
@@ -69,6 +54,36 @@ public class Main {
                 default:
                     break;
             }
+        }
+    }
+
+    private static void attempt(Scanner scanner, Robinhood robinhood, List<Audio> audioList) throws IOException {
+        try {
+            audioList.addAll(robinhood.tryWithCached());
+        } catch (NoTokenException e) {
+            System.out.println("enter login and password");
+            String username = scanner.next();
+            String password = scanner.next();
+            try {
+                audioList.addAll(robinhood.tryWithNewToken(username, password, ""));
+            } catch (NoTokenException noTokenException) {
+                // Still no token after login, unreachable
+            } catch (CodeRequiredException codeRequiredException) {
+                System.out.println("enter code");
+                String code = scanner.next();
+                try {
+                    audioList.addAll(robinhood.tryWithNewToken(username, password, code));
+                } catch (NoTokenException noTokenException) {
+                    // Still no token after login, unreachable
+                } catch (CodeRequiredException | InvalidClientException requiredException) {
+                    // Incorrect code or login data, try to log in again
+                    attempt(scanner, robinhood, audioList);
+                }
+            } catch (InvalidClientException invalidClientException) {
+                // Incorrect login data, try to log in again
+                attempt(scanner, robinhood, audioList);
+            }
+
         }
     }
 }

@@ -22,7 +22,7 @@ public class TokenReceiver {
     private final Gson gson = new Gson();
     private final ApiInterface apiInterface = new ApiInterface();
 
-    public Token getInitialToken(String username, String password, String code) throws IOException, TokenException {
+    public Token getInitialToken(String username, String password, String code) throws IOException, CodeRequiredException, InvalidClientException {
         OkHttpClient client = new OkHttpClient();
         final String deviceId = randomString();
         String url = "https://oauth.vk.com/token" +
@@ -40,7 +40,9 @@ public class TokenReceiver {
                 TokenResultDataSet dataSet = gson.fromJson(body.string(), TokenResultDataSet.class);
                 if ("need_validation".equals(dataSet.getError())) {
                     apiInterface.send(new TwoFARequest(dataSet.getValidationSid()));
-                    throw new TokenException("code required");
+                    throw new CodeRequiredException();
+                } else if ("invalid_client".equals(dataSet.getError())) {
+                    throw new InvalidClientException();
                 }
                 return new Token(dataSet.getAccessToken(), dataSet.getSecret(), deviceId);
             } else {
