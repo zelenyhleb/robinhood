@@ -19,6 +19,10 @@ public class Token {
         this.deviceId = deviceId;
     }
 
+    public static Token empty() {
+        return new Token("", "", "");
+    }
+
     public String getAccessToken() {
         return accessToken;
     }

@@ -1,6 +1,6 @@
 package ru.krivocraft.robinhood;
 
-import ru.krivocraft.robinhood.api.CodeRequiredException;
+import ru.krivocraft.robinhood.api.NeedValidationException;
 import ru.krivocraft.robinhood.api.InvalidClientException;
 import ru.krivocraft.robinhood.api.Robinhood;
 import ru.krivocraft.robinhood.api.NoTokenException;
@@ -57,33 +57,28 @@ public class Main {
         }
     }
 
+
     private static void attempt(Scanner scanner, Robinhood robinhood, List<Audio> audioList) throws IOException {
         try {
-            audioList.addAll(robinhood.tryWithCached());
+            audioList.addAll(robinhood.loadAudio());
         } catch (NoTokenException e) {
             System.out.println("enter login and password");
             String username = scanner.next();
             String password = scanner.next();
             try {
-                audioList.addAll(robinhood.tryWithNewToken(username, password, ""));
-            } catch (NoTokenException noTokenException) {
-                // Still no token after login, unreachable
-            } catch (CodeRequiredException codeRequiredException) {
+                robinhood.loginAttempt(username, password);
+            } catch (NeedValidationException needValidationException) {
                 System.out.println("enter code");
                 String code = scanner.next();
                 try {
-                    audioList.addAll(robinhood.tryWithNewToken(username, password, code));
-                } catch (NoTokenException noTokenException) {
-                    // Still no token after login, unreachable
-                } catch (CodeRequiredException | InvalidClientException requiredException) {
-                    // Incorrect code or login data, try to log in again
-                    attempt(scanner, robinhood, audioList);
+                    robinhood.loginAttempt(username, password, code);
+                } catch (InvalidClientException invalidClientException) {
+                    invalidClientException.printStackTrace();
                 }
             } catch (InvalidClientException invalidClientException) {
-                // Incorrect login data, try to log in again
-                attempt(scanner, robinhood, audioList);
+                invalidClientException.printStackTrace();
             }
-
+            attempt(scanner, robinhood, audioList);
         }
     }
 }

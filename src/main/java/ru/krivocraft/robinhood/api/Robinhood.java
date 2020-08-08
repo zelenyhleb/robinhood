@@ -25,7 +25,7 @@ public class Robinhood {
         this.client = new Client();
     }
 
-    public List<Audio> tryWithCached() throws NoTokenException, IOException {
+    public List<Audio> loadAudio() throws NoTokenException, IOException {
         if (storage.available()) {
             VKRequest userRequest = new GetIdentifierRequest(storage.getToken());
             VKResponse<User> userResponse = new Gson().fromJson(new ApiInterface().send(userRequest), new TypeToken<VKResponse<User>>() {
@@ -39,18 +39,19 @@ public class Robinhood {
         }
     }
 
-    public List<Audio> tryWithNewToken(String username, String password, String code) throws IOException, NoTokenException, CodeRequiredException, InvalidClientException {
-        Token initialToken = receiver.getInitialToken(username, password, code);
+    public void loginAttempt(String username, String password, String code) throws IOException, InvalidClientException {
+        acquireToken(receiver.getInitialToken(username, password, code));
+    }
+
+    public void loginAttempt(String username, String password) throws NeedValidationException, IOException, InvalidClientException {
+        acquireToken(receiver.getInitialToken(username, password));
+    }
+
+    private void acquireToken(Token initialToken) throws IOException {
         String secret = initialToken.getSecret();
         String accessToken = receiver.refreshToken(initialToken).getAccessToken();
         Token token = new Token(accessToken, secret, client.getClientId());
         storage.putToken(token);
-        return tryWithCached();
-    }
-
-    public List<Audio> tryWithNewToken(String username, String password) throws CodeRequiredException, InvalidClientException, IOException, NoTokenException {
-        return tryWithNewToken(username, password, "");
-
     }
 
 }
